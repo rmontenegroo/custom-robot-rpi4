@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import time
 
 ON = GPIO.LOW
 OFF = GPIO.HIGH
@@ -23,6 +24,15 @@ class Buzzer(object):
 		self._state = ON
 		
 	def off(self):
+		self._state = OFF
+				
+	def beep(self):
+		self._state = ON
+		time.sleep(0.2)
+		self._state = OFF
+		time.sleep(0.2)
+		self._state = ON
+		time.sleep(0.2)
 		self._state = OFF
 				
 	@property

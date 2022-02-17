@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 from robot import Robot
 
 def main():

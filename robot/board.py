@@ -17,7 +17,7 @@ class Board(Thread):
 		Thread controlling Robot actions
 	"""
 		
-	def __init__(self, waitTime = 0.1, *args, **kwargs):
+	def __init__(self, waitTime = 0.05, *args, **kwargs):
 		
 		Thread.__init__(self, *args, **kwargs)
 
@@ -33,7 +33,7 @@ class Board(Thread):
 			
 		self._logger = logging.getLogger('robot')
 		self._logger.setLevel(logging.DEBUG)
-		
+				
 		self._logger.info('Robot started')
 		
 		
@@ -54,7 +54,7 @@ class Board(Thread):
 		return self._ledB
 
 
-	def refreshRobotState(self):
+	def flush(self):
 		
 		GPIO.setmode(GPIO.BCM)
 		
@@ -71,6 +71,16 @@ class Board(Thread):
 		self._run = False
 
 
+	def beep(self, beeps=2):
+		for i in range(beeps):
+			self._buzzer.on()
+			self.flush()
+			time.sleep(0.1)
+			self._buzzer.off()
+			self.flush()
+			time.sleep(0.2)
+
+
 	def _cleanup(self):
 		
 		GPIO.setmode(GPIO.BCM)
@@ -83,6 +93,7 @@ class Board(Thread):
 		self._ledG.set()
 		self._ledB.set()
 		
+		self.beep(3)
 		self._buzzer.off()
 		self._buzzer.set()
 		
@@ -90,11 +101,13 @@ class Board(Thread):
 
 	
 	def run(self):
-		
-		try:	
+				
+		try:
+			self.beep()
+			
 			while self._run:
 										
-				self.refreshRobotState()
+				self.flush()
 							
 				time.sleep(self._waitTime)
 				

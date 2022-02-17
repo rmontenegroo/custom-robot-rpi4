@@ -1,0 +1,5 @@
+- criar classe Componente
+- criar classe ComponenteOnOff(componente)
+- criar classe ComponenteThread para controlar cada componente de forma 
+independente (testar por causa do setup da placa)
+- controlar servo dos leds pelo R1 e L1
