@@ -50,8 +50,8 @@ class Robot(Controller):
 		self._logger.info('on_square_release called')
 		self._board.buzzer.off()
 		
-	def start(self):
-		self.listen()
+	def shutdown(self):
+		self._board.shutdown()
 
 
 
