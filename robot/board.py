@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import RPi.GPIO as gpio
 import time
 import logging
 
@@ -21,13 +21,17 @@ class Board(Thread):
 		
 		Thread.__init__(self, *args, **kwargs)
 
+		self._gpio = gpio
+		
+		self._gpio.setmode(self._gpio.BCM)
+
 		self._run = True
 	
-		self._ledR = led.Led('R', 22, led.OFF)
-		self._ledG = led.Led('G', 27, led.OFF)
-		self._ledB = led.Led('B', 24, led.OFF)
+		self._ledR = led.Led('R', self._gpio, 22, led.OFF)
+		self._ledG = led.Led('G', self._gpio, 27, led.OFF)
+		self._ledB = led.Led('B', self._gpio, 24, led.OFF)
 		
-		self._buzzer = buzzer.Buzzer('buzzer', 8, buzzer.OFF)
+		self._buzzer = buzzer.Buzzer('buzzer', 8, self._gpio, buzzer.OFF)
 
 		self._waitTime = waitTime
 			
@@ -35,7 +39,11 @@ class Board(Thread):
 		self._logger.setLevel(logging.DEBUG)
 				
 		self._logger.info('Robot started')
+
 		
+	@property
+	def gpio(self):
+		return self._gpio
 		
 	@property
 	def buzzer(self):
@@ -55,9 +63,7 @@ class Board(Thread):
 
 
 	def flush(self):
-		
-		GPIO.setmode(GPIO.BCM)
-		
+				
 		self._ledR.set()
 		self._ledG.set()
 		self._ledB.set()
@@ -82,9 +88,7 @@ class Board(Thread):
 
 
 	def _cleanup(self):
-		
-		GPIO.setmode(GPIO.BCM)
-		
+			
 		self._ledR.off()
 		self._ledG.off()
 		self._ledB.off()
@@ -97,7 +101,7 @@ class Board(Thread):
 		self._buzzer.off()
 		self._buzzer.set()
 		
-		GPIO.cleanup()
+		self._gpio.cleanup()
 
 	
 	def run(self):
