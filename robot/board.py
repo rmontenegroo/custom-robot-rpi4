@@ -31,18 +31,19 @@ class Board(Thread):
 		self._ledG = led.Led('G', self._gpio, 27, led.OFF)
 		self._ledB = led.Led('B', self._gpio, 24, led.OFF)
 		
-		self._buzzer = buzzer.Buzzer('buzzer', 8, self._gpio, buzzer.OFF)
+		self._buzzer = buzzer.Buzzer('buzzer', self._gpio, 8, buzzer.OFF)
 
 		self._waitTime = waitTime
 			
-		self._logger = logging.getLogger('robot')
+		self._logger = logging.getLogger('board')
 		self._logger.setLevel(logging.DEBUG)
 				
-		self._logger.info('Robot started')
+		self._logger.info('Board')
 
 		
 	@property
 	def gpio(self):
+		self._logger.info('Board')
 		return self._gpio
 		
 	@property
@@ -51,74 +52,76 @@ class Board(Thread):
 		
 	@property
 	def ledR(self):
+		self._logger.info('Board')
 		return self._ledR
 		
 	@property
 	def ledG(self):
+		self._logger.info('Board')
 		return self._ledG
 	
 	@property
 	def ledB(self):
+		self._logger.info('Board')
 		return self._ledB
-
-
-	def flush(self):
-				
-		self._ledR.set()
-		self._ledG.set()
-		self._ledB.set()
+	
+	def set(self):
+		pass
 		
-		self._buzzer.set()
+	def _shutdownComponents(self):
+		self._logger.info('Board')
 		
-
-	def shutdown(self):
+		self._ledR.stop()
+		self._ledG.stop()
+		self._ledB.stop()
 		
-		self._logger.info('Robot shutdown')
-		self._run = False
-
-
-	def beep(self, beeps=2):
-		for i in range(beeps):
-			self._buzzer.on()
-			self.flush()
-			time.sleep(0.1)
-			self._buzzer.off()
-			self.flush()
-			time.sleep(0.2)
-
-
-	def _cleanup(self):
-			
-		self._ledR.off()
-		self._ledG.off()
-		self._ledB.off()
+		self._buzzer.stop()
 		
-		self._ledR.set()
-		self._ledG.set()
-		self._ledB.set()
-		
-		self.beep(3)
-		self._buzzer.off()
-		self._buzzer.set()
+		while 	self._ledR.is_alive() or \
+				self._ledG.is_alive() or \
+				self._ledB.is_alive() or \
+				self._buzzer.is_alive():
+			pass
 		
 		self._gpio.cleanup()
 
+		
+	def stop(self):
+		self._logger.info('Board')
+
+		self._run = False
+
+
+	def _initComponents(self):
+		self._logger.info('Board')
+		
+		self._buzzer.start()
+						
+		self._ledR.start()
+		self._ledG.start()
+		self._ledB.start()
+
 	
 	def run(self):
+		self._logger.info('Board')
 				
 		try:
-			self.beep()
+			self._initComponents()
+			
+			self._buzzer.beep(2)
 			
 			while self._run:
 										
-				self.flush()
+				self.set()
 							
 				time.sleep(self._waitTime)
 				
 		except Exception as e :
+			self._logger.info('Board exception')
 			self._logger.error(str(e))
 			raise e
 			
 		finally:
-			self._cleanup()
-
+			self._logger.info('Board finally')
+			self._buzzer.beep(3)
+			self._shutdownComponents()
