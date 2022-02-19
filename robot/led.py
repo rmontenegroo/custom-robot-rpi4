@@ -20,7 +20,9 @@ class Led(OnOffComponent, Thread):
 	"""
 	
 	def __init__(self, label, gpio, pin, initialState=None, waitTime = 0.05, *args, **kwargs):
+		
 		OnOffComponent.__init__(self, label, gpio, pin, ON, OFF, initialState)
+		
 		Thread.__init__(self, *args, **kwargs)
 
 		self._run = True
