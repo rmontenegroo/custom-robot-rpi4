@@ -4,6 +4,7 @@ import logging
 
 from robot import led
 from robot import buzzer
+from robot import servo
 
 from threading import Thread
 
@@ -32,6 +33,8 @@ class Board(Thread):
 		self._ledB = led.Led('B', self._gpio, 24, led.OFF)
 		
 		self._buzzer = buzzer.Buzzer('buzzer', self._gpio, 8, buzzer.OFF)
+		
+		self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, freq=50, angle=90)
 
 		self._waitTime = waitTime
 			
@@ -64,6 +67,11 @@ class Board(Thread):
 	def ledB(self):
 		self._logger.info('Board')
 		return self._ledB
+		
+	@property
+	def ledServo(self):
+		self._logger.info('Board')
+		return self._ledServo
 	
 	def set(self):
 		pass
@@ -77,10 +85,13 @@ class Board(Thread):
 		
 		self._buzzer.stop()
 		
+		self._ledServo.stop()
+		
 		while 	self._ledR.is_alive() or \
 				self._ledG.is_alive() or \
 				self._ledB.is_alive() or \
-				self._buzzer.is_alive():
+				self._buzzer.is_alive() or \
+				self._ledServo.is_alive():
 			pass
 		
 		self._gpio.cleanup()
@@ -100,6 +111,8 @@ class Board(Thread):
 		self._ledR.start()
 		self._ledG.start()
 		self._ledB.start()
+		
+		self._ledServo.start()
 
 	
 	def run(self):

@@ -31,7 +31,7 @@ class Led(OnOffComponent, Thread):
 		self._logger.setLevel(logging.DEBUG)
 				
 		self._logger.info(self._label + ' started')
-				
+
 		
 	def stop(self):
 		self._logger.info(self._label)
