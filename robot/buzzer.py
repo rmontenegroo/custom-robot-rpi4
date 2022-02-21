@@ -1,5 +1,3 @@
-import RPi.GPIO as GPIO
-
 import time
 import logging
 
@@ -9,8 +7,8 @@ from robot.component import OnOffComponent
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
-OFF = GPIO.HIGH
-ON = GPIO.LOW
+OFF = 1
+ON = 0
 
 
 class Buzzer(OnOffComponent, Thread):

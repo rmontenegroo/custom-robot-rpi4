@@ -1,4 +1,3 @@
-import RPi.GPIO as GPIO
 import time
 import logging
 
@@ -9,8 +8,8 @@ from robot.component import OnOffComponent
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
-ON = GPIO.HIGH
-OFF = GPIO.LOW
+ON = 1
+OFF = 0
 
 
 class Led(OnOffComponent, Thread):

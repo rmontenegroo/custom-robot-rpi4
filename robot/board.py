@@ -1,6 +1,6 @@
-import RPi.GPIO as gpio
 import time
 import logging
+import pigpio
 
 from robot import led
 from robot import buzzer
@@ -22,10 +22,8 @@ class Board(Thread):
 		
 		Thread.__init__(self, *args, **kwargs)
 
-		self._gpio = gpio
+		self._gpio = pigpio.pi() 
 		
-		self._gpio.setmode(self._gpio.BCM)
-
 		self._run = True
 	
 		self._ledR = led.Led('R', self._gpio, 22, led.OFF)
@@ -94,7 +92,7 @@ class Board(Thread):
 				self._ledServo.is_alive():
 			pass
 		
-		self._gpio.cleanup()
+		self._gpio.stop()
 
 		
 	def stop(self):
