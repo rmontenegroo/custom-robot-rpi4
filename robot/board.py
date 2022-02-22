@@ -5,6 +5,7 @@ import pigpio
 from robot import led
 from robot import buzzer
 from robot import servo
+from robot import motor
 
 from threading import Thread
 
@@ -33,6 +34,9 @@ class Board(Thread):
 		self._buzzer = buzzer.Buzzer('buzzer', self._gpio, 8, buzzer.OFF)
 		
 		self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, freq=50, angle=90)
+
+		self._rMotor = motor.Motor('rightMotor', self._gpio, pinUp=20, pinDown=21, pinPwm=16, freq=2000)
+		self._lMotor = motor.Motor('leftMotor', self._gpio, pinUp=19, pinDown=26, pinPwm=13, freq=2000)
 
 		self._waitTime = waitTime
 			
@@ -70,6 +74,16 @@ class Board(Thread):
 	def ledServo(self):
 		self._logger.info('Board')
 		return self._ledServo
+
+	@property
+	def rMotor(self):
+		self._logger.info('Board')
+		return self._rMotor
+
+	@property
+	def lMotor(self):
+		self._logger.info('Board')
+		return self._lMotor
 	
 	def set(self):
 		pass
@@ -84,12 +98,18 @@ class Board(Thread):
 		self._buzzer.stop()
 		
 		self._ledServo.stop()
+
+		self._rMotor.stop()
+		self._lMotor.stop()
+
 		
 		while 	self._ledR.is_alive() or \
 				self._ledG.is_alive() or \
 				self._ledB.is_alive() or \
 				self._buzzer.is_alive() or \
-				self._ledServo.is_alive():
+				self._ledServo.is_alive() or \
+				self._rMotor.is_alive() or \
+				self._lMotor.is_alive():
 			pass
 		
 		self._gpio.stop()
@@ -111,6 +131,9 @@ class Board(Thread):
 		self._ledB.start()
 		
 		self._ledServo.start()
+
+		self._rMotor.start()
+		self._lMotor.start()
 
 	
 	def run(self):

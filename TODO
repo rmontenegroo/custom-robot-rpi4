@@ -1,3 +1,8 @@
-- Run
+- Run:
+	- fazer observacao dos eventos que estao mapeados errados no controller
+	- aumentar velocidade
+	- virar a direita -> spin right
+	- virar a esquerda -> spin left
+	- mover eventos para o manche tirando das setas
 - Camera Servo
 - Camera Snapshot, Video streaming
