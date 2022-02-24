@@ -3,8 +3,13 @@
 from robot.controller import RobotController
 
 def main():
+
     controller = RobotController(interface="/dev/input/js0", connecting_using_ds4drv=False)
-    controller.listen()
+
+    try:
+        controller.listen()
+    except (KeyboardInterrupt, SystemExit):
+        controller._board.stop()
 
 if __name__ == "__main__":
     main()

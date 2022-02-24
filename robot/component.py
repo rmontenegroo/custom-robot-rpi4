@@ -66,8 +66,9 @@ class OnePinComponent(BaseComponent):
 
 class OnOffComponent(OnePinComponent):
 
-    def __init__(self, label, gpio, pin, mode, on=pigpio.HIGH, off=pigpio.LOW, initialValue=None):
-        OnePinComponent.__init__(self, label, gpio, pin, mode, initialValue=initialValue)
+
+    def __init__(self, label, gpio, pin, on=pigpio.HIGH, off=pigpio.LOW, initialValue=None):
+        OnePinComponent.__init__(self, label, gpio, pin, mode=pigpio.OUTPUT, initialValue=initialValue)
 
         self._on = on
         self._off = off
@@ -85,3 +86,7 @@ class OnOffComponent(OnePinComponent):
         self._state = self._on if self._state == self._off else self._off
     
 
+    def set(self):
+        self._gpio.write(self._pin, self._state)
+
+        
