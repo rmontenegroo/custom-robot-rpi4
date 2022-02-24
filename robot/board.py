@@ -33,7 +33,10 @@ class Board(Thread):
         
         self._buzzer = buzzer.Buzzer('buzzer', self._gpio, 8, buzzer.OFF)
         
-        self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, freq=50, angle=90)
+        self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, frequency=50, initialValue=servo.Servo.angle2dc(90))
+
+        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(90))
+        self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(90))
 
         # self._rMotor = motor.Motor('rightMotor', self._gpio, pinUp=20, pinDown=21, pinPwm=16, freq=2000)
         # self._lMotor = motor.Motor('leftMotor', self._gpio, pinUp=19, pinDown=26, pinPwm=13, freq=2000)
@@ -75,6 +78,16 @@ class Board(Thread):
         self._logger.info('Board')
         return self._ledServo
 
+    @property
+    def camServoV(self):
+        self._logger.info('Board')
+        return self._camServoV
+
+    @property
+    def camServoH(self):
+        self._logger.info('Board')
+        return self._camServoH
+
     # @property
     # def rMotor(self):
     #   self._logger.info('Board')
@@ -99,6 +112,9 @@ class Board(Thread):
         
         self._ledServo.stop()
 
+        self._camServoV.stop()
+        self._camServoH.stop()
+
         # self._rMotor.stop()
         # self._lMotor.stop()
 
@@ -107,7 +123,9 @@ class Board(Thread):
                 self._ledG.is_alive() or \
                 self._ledB.is_alive() or \
                 self._buzzer.is_alive() or \
-                self._ledServo.is_alive():
+                self._ledServo.is_alive() or \
+                self._camServoV.is_alive() or \
+                self._camServoH.is_alive():
                 # self._rMotor.is_alive() or \
                 # self._lMotor.is_alive():
             pass
@@ -131,6 +149,9 @@ class Board(Thread):
         self._ledB.start()
         
         self._ledServo.start()
+
+        self._camServoV.start()
+        self._camServoH.start()
 
         # self._rMotor.start()
         # self._lMotor.start()

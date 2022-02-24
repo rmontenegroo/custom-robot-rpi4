@@ -45,15 +45,43 @@ class RobotController(Controller):
     
     def on_R1_press(self):
         Controller.on_R1_press(self)
+        self._board._ledServo.rotate_clockwise()
 
     def on_R1_release(self):
         Controller.on_R1_release(self)
+        self._board._ledServo.halt()
 
 
     def on_L1_press(self):
         Controller.on_L1_press(self)
+        self._board._ledServo.rotate_anticlockwise()
 
     def on_L1_release(self):
         Controller.on_L1_release(self)
+        self._board._ledServo.halt()
 
 
+    def on_up_arrow_press(self):
+        Controller.on_up_arrow_press(self)
+        self._board._camServoV.rotate_clockwise()
+
+    def on_down_arrow_press(self):
+        Controller.on_down_arrow_press(self)
+        self._board._camServoV.rotate_anticlockwise()
+
+    def on_up_down_arrow_release(self):
+        Controller.on_up_down_arrow_release(self)
+        self._board._camServoV.halt()
+
+
+    def on_right_arrow_press(self):
+        Controller.on_right_arrow_press(self)
+        self._board._camServoH.rotate_clockwise()
+
+    def on_left_arrow_press(self):
+        Controller.on_left_arrow_press(self)
+        self._board._camServoH.rotate_anticlockwise()
+
+    def on_left_right_arrow_release(self):
+        Controller.on_left_right_arrow_release(self)
+        self._board._camServoH.halt()
