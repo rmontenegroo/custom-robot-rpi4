@@ -98,9 +98,6 @@ class Board(Thread):
         self._logger.info('Board')
         return self._lMotor
     
-    def set(self):
-        pass
-        
     def _shutdownComponents(self):
         self._logger.info('Board')
         
@@ -132,6 +129,14 @@ class Board(Thread):
         
         self._gpio.stop()
 
+
+    def set(self):
+        """
+        ### if board must do something
+           do it here ###
+        """
+        pass
+
         
     def stop(self):
         self._logger.info('Board')
@@ -156,7 +161,7 @@ class Board(Thread):
         self._rMotor.start()
         self._lMotor.start()
 
-    
+
     def run(self):
         self._logger.info('Board')
                 
