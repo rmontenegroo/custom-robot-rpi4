@@ -93,8 +93,8 @@ class RobotController(Controller):
 
     def on_L3_down(self, value):
         self._board.buzzer.beep(3, waitTime=0.8)
-        self._board.rMotor.setRelativeSpeed(0, 32767, value)
-        self._board.lMotor.setRelativeSpeed(0, 32767, value)
+        self._board.rMotor.setRelativeSpeed(0, 100, 25)
+        self._board.rMotor.setRelativeSpeed(0, 100, 25)
         self._board.rMotor.backward()
         self._board.lMotor.backward()
 
@@ -123,4 +123,11 @@ class RobotController(Controller):
     ######################################################
 
 
+    ################## camera ############################
+
+    def on_share_press(self):
+        # self._board.camera.snapshot('/tmp/foto.jpg')
+        self._board.camera.snapshot()
+
+    ######################################################
 

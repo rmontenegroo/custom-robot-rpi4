@@ -6,6 +6,7 @@ from robot import led
 from robot import buzzer
 from robot import servo
 from robot import motor
+from robot import camera
 
 from threading import Thread
 
@@ -40,6 +41,8 @@ class Board(Thread):
 
         self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
         self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
+
+        self._camera = camera.Camera('camera')
 
         self._waitTime = waitTime
             
@@ -89,6 +92,11 @@ class Board(Thread):
         return self._camServoH
 
     @property
+    def camera(self):
+        self._logger.info('Board')
+        return self._camera
+
+    @property
     def rMotor(self):
         self._logger.info('Board')
         return self._rMotor
@@ -115,6 +123,7 @@ class Board(Thread):
         self._rMotor.stop()
         self._lMotor.stop()
 
+        self._camera.stop()
         
         while   self._ledR.is_alive() or \
                 self._ledG.is_alive() or \
@@ -124,7 +133,8 @@ class Board(Thread):
                 self._camServoV.is_alive() or \
                 self._camServoH.is_alive() or \
                 self._rMotor.is_alive() or \
-                self._lMotor.is_alive():
+                self._lMotor.is_alive() or \
+                self._camera.is_alive():
             pass
         
         self._gpio.stop()
@@ -160,6 +170,8 @@ class Board(Thread):
 
         self._rMotor.start()
         self._lMotor.start()
+
+        self._camera.start()
 
 
     def run(self):
