@@ -66,6 +66,11 @@ class Motor(PWMComponent, Thread):
         return self._maxSpeed
 
 
+    def setRelativeSpeed(self, minValue, maxValue, relValue):
+        self._logger.info(self._label)
+        self.speed = self._minSpeed + abs((self._maxSpeed - self._minSpeed)*relValue/(maxValue - minValue))
+
+
     @property
     def speed(self):
         return self._speed
@@ -73,8 +78,9 @@ class Motor(PWMComponent, Thread):
 
     @speed.setter
     def speed(self, value):
+        self._logger.info(self._label)
         if value >= self._minSpeed and value <= self._maxSpeed:
-            self._speed = speed
+            self._speed = value
 
 
     @PWMComponent.state.setter
@@ -113,6 +119,7 @@ class Motor(PWMComponent, Thread):
 
     def halt(self):
         self._state = (LOW, LOW)
+        self._speed = self._minSpeed
 
 
     def stop(self):

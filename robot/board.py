@@ -35,11 +35,11 @@ class Board(Thread):
         
         self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, frequency=50, initialValue=servo.Servo.angle2dc(90))
 
-        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(90))
         self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(90))
+        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(90))
 
-        self._rMotor = motor.Motor('rightMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
-        self._lMotor = motor.Motor('leftMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
+        self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
+        self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
 
         self._waitTime = waitTime
             
