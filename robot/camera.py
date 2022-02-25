@@ -19,8 +19,10 @@ class Camera(Thread):
 
         self._captureDevice = cv2.VideoCapture(deviceName)
         self._deviceName = deviceName
-        self._lock = Lock()
+        self._snapshotLock = Lock()
+        self._snapCountLock = Lock()
         self._label = label
+        self._lastSnapshot = None
 
         self.__snapCount = 0
         self.__rndPrefix = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -36,8 +38,9 @@ class Camera(Thread):
 
 
     def clear(self):
-        self._logger.info('camera released')
+        self._logger.info(self._label)
         self._captureDevice.release()
+        self._logger.info('camera released')
 
 
     @property
@@ -64,6 +67,10 @@ class Camera(Thread):
 
             while self._run:
 
+                self._snapshotLock.acquire()
+                ret, self._lastSnapshot = self._captureDevice.read()
+                self._snapshotLock.release()
+
                 self.set()
 
                 time.sleep(self._waitTime)
@@ -78,18 +85,29 @@ class Camera(Thread):
             self.clear()
 
 
-    def snapshot(self, dirname='/tmp', filename='snapshot.jpg'):
+    def snapshot(self, dirname='/tmp', filename='snapshot.jpg', overwrite=True):
+        self._logger.info(self._label)
 
-        self._lock.acquire()
-        ret, frame = self._captureDevice.read()
-        self._lock.release()
+        self._snapshotLock.acquire()
+        frame = self._lastSnapshot
+        self._snapshotLock.release()
 
-        if ret:
-            filepath = os.path.join(dirname, f'{self.__rndPrefix}_{self.__snapCount}_{filename}')
+        if frame is not None:
+
+            filepath = os.path.join(dirname, f'{filename}')
+
+            if not overwrite:
+
+                self._snapCountLock.acquire()
+                filepath = os.path.join(dirname, f'{self.__rndPrefix}_{self.__snapCount}_{filename}')
+                self._snapCountLock.release()
+
             cv2.imwrite(filepath, frame)
-            self._lock.acquire()
+
+            self._snapCountLock.acquire()
             self.__snapCount += 1
-            self._lock.release()
+            self._snapCountLock.release()
+
             self._logger.info(f'Snapshot captured to {filepath}.')
 
         else:

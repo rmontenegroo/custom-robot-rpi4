@@ -126,7 +126,6 @@ class RobotController(Controller):
     ################## camera ############################
 
     def on_share_press(self):
-        # self._board.camera.snapshot('/tmp/foto.jpg')
         self._board.camera.snapshot()
 
     ######################################################
