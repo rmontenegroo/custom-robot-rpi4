@@ -85,3 +85,21 @@ class RobotController(Controller):
     def on_left_right_arrow_release(self):
         Controller.on_left_right_arrow_release(self)
         self._board._camServoH.halt()
+
+
+    def on_L3_up(self, value):
+        Controller.on_L3_up(self, value)
+        self._board._rMotor.forward()
+        self._board._lMotor.forward()
+
+    def on_L3_down(self, value):
+        Controller.on_L3_down(self, value)
+        self._board._rMotor.backward()
+        self._board._lMotor.backward()
+
+    def on_L3_y_at_rest(self):
+        Controller.on_L3_y_at_rest(self)
+        self._board.rMotor.halt()
+        self._board.lMotor.halt()
+
+

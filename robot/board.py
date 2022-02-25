@@ -5,7 +5,7 @@ import pigpio
 from robot import led
 from robot import buzzer
 from robot import servo
-# from robot import motor
+from robot import motor
 
 from threading import Thread
 
@@ -38,8 +38,8 @@ class Board(Thread):
         self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(90))
         self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(90))
 
-        # self._rMotor = motor.Motor('rightMotor', self._gpio, pinUp=20, pinDown=21, pinPwm=16, freq=2000)
-        # self._lMotor = motor.Motor('leftMotor', self._gpio, pinUp=19, pinDown=26, pinPwm=13, freq=2000)
+        self._rMotor = motor.Motor('rightMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
+        self._lMotor = motor.Motor('leftMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
 
         self._waitTime = waitTime
             
@@ -88,15 +88,15 @@ class Board(Thread):
         self._logger.info('Board')
         return self._camServoH
 
-    # @property
-    # def rMotor(self):
-    #   self._logger.info('Board')
-    #   return self._rMotor
+    @property
+    def rMotor(self):
+        self._logger.info('Board')
+        return self._rMotor
 
-    # @property
-    # def lMotor(self):
-    #   self._logger.info('Board')
-    #   return self._lMotor
+    @property
+    def lMotor(self):
+        self._logger.info('Board')
+        return self._lMotor
     
     def set(self):
         pass
@@ -115,8 +115,8 @@ class Board(Thread):
         self._camServoV.stop()
         self._camServoH.stop()
 
-        # self._rMotor.stop()
-        # self._lMotor.stop()
+        self._rMotor.stop()
+        self._lMotor.stop()
 
         
         while   self._ledR.is_alive() or \
@@ -125,9 +125,9 @@ class Board(Thread):
                 self._buzzer.is_alive() or \
                 self._ledServo.is_alive() or \
                 self._camServoV.is_alive() or \
-                self._camServoH.is_alive():
-                # self._rMotor.is_alive() or \
-                # self._lMotor.is_alive():
+                self._camServoH.is_alive() or \
+                self._rMotor.is_alive() or \
+                self._lMotor.is_alive():
             pass
         
         self._gpio.stop()
@@ -153,8 +153,8 @@ class Board(Thread):
         self._camServoV.start()
         self._camServoH.start()
 
-        # self._rMotor.start()
-        # self._lMotor.start()
+        self._rMotor.start()
+        self._lMotor.start()
 
     
     def run(self):

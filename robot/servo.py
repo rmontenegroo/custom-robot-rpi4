@@ -21,9 +21,12 @@ class Servo(PWMComponent, Thread):
     
     def __init__(self, label, gpio, pin, frequency=FREQUENCY, minDC=MINDUTYCYCLE, maxDC=MAXDUTYCYCLE, step=50, initialValue=None, waitTime = 0.05, *args, **kwargs):
         
-        PWMComponent.__init__(self, label, gpio, pin, frequency, minDC, maxDC, initialValue)
+        PWMComponent.__init__(self, label, gpio, pin, frequency, initialValue)
         
         Thread.__init__(self, *args, **kwargs)
+
+        self._minDC = minDC
+        self._maxDC = maxDC
 
         self._sign = 0
         self._step = step
@@ -37,6 +40,21 @@ class Servo(PWMComponent, Thread):
                 
         self._logger.info(self._label + ' started')
 
+    
+    @property
+    def minDC(self):
+        return self._minDC
+
+
+    @property
+    def maxDC(self):
+        return self._maxDC
+
+
+    @PWMComponent.state.setter
+    def state(self, value):
+        if value >= self._minDC and value <= self._maxDC:
+            self._value = value
     
     @staticmethod
     def angle2dc(angle, minDC=MINDUTYCYCLE, maxDC=MAXDUTYCYCLE):
@@ -95,3 +113,5 @@ class Servo(PWMComponent, Thread):
     def halt(self):
         self._logger.info(self._label)
         self._sign = 0
+
+        
