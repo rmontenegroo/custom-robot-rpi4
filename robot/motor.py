@@ -12,8 +12,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s
 HIGH = pigpio.HIGH
 LOW = pigpio.LOW
 FREQUENCY = 2000
-MINSPEED = 150
-MAXSPEED = 250
+MINSPEED = 100
+MAXSPEED = 200
 
 
 class Motor(PWMComponent, Thread):
@@ -35,6 +35,7 @@ class Motor(PWMComponent, Thread):
         self._minSpeed = minSpeed
         self._maxSpeed = maxSpeed
         self._speed = self._minSpeed
+        self._speedRate = 1
 
         self._run = True
 
@@ -78,9 +79,18 @@ class Motor(PWMComponent, Thread):
 
     @speed.setter
     def speed(self, value):
-        self._logger.info(self._label)
         if value >= self._minSpeed and value <= self._maxSpeed:
             self._speed = value
+
+    @property
+    def speedRate(self):
+        return self._speedRate
+
+
+    @speedRate.setter
+    def speedRate(self, value):
+        if value >= 0 and value <= 1:
+            self._speedRate = value
 
 
     @PWMComponent.state.setter
@@ -102,7 +112,7 @@ class Motor(PWMComponent, Thread):
     def set(self):
         self._gpio.write(self._pinIn1, self._state[0])
         self._gpio.write(self._pinIn2, self._state[1])
-        self._gpio.set_PWM_dutycycle(self._pin, self._speed)
+        self._gpio.set_PWM_dutycycle(self._pin, self._speed*self._speedRate)
 
 
     def forward(self, speed=None):

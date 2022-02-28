@@ -98,27 +98,44 @@ class RobotController(Controller):
         self._board.rMotor.backward()
         self._board.lMotor.backward()
 
+    def on_R2_press(self, value):
+        self._board.rMotor.setRelativeSpeed(-32767, 0, value)
+        self._board.lMotor.setRelativeSpeed(-32767, 0, value)
+        self._board.rMotor.backward()
+        self._board.lMotor.forward()
+
+    def on_R2_release(self, value):
+        self._board.rMotor.halt()
+        self._board.lMotor.halt()
+
+    def on_L2_press(self, value):
+        self._board.rMotor.setRelativeSpeed(-32767, 0, value)
+        self._board.lMotor.setRelativeSpeed(-32767, 0, value)
+        self._board.rMotor.forward()
+        self._board.lMotor.backward()
+
+    def on_L2_release(self, value):
+        self._board.rMotor.halt()
+        self._board.lMotor.halt()
+
     def on_L3_y_at_rest(self):
         self._board.buzzer.off()
         self._board.rMotor.halt()
         self._board.lMotor.halt()
 
     def on_R3_right(self, value):
-        self._board.rMotor.setRelativeSpeed(-32767, 0, value/4)
-        self._board.lMotor.setRelativeSpeed(-32767, 0, 3*value/4)
-        self._board.rMotor.backward()
-        self._board.lMotor.forward()
+        rate = abs(value/32767)*0.9
+        self._board.rMotor.speedRate = 1.0 - rate
+        self._board.lMotor.speedRate = rate
 
     def on_R3_left(self, value):
-        self._board.rMotor.setRelativeSpeed(-32767, 0, 3*value/4)
-        self._board.lMotor.setRelativeSpeed(-32767, 0, value/4)
-        self._board.rMotor.forward()
-        self._board.lMotor.backward()
+        rate = abs(value/32767)*0.9
+        self._board.rMotor.speedRate = rate
+        self._board.lMotor.speedRate = 1.0 - rate
 
     def on_R3_x_at_rest(self):
-        self._board.buzzer.off()
-        self._board.rMotor.halt()
-        self._board.lMotor.halt()
+        self._board.rMotor.speedRate = 1.0
+        self._board.lMotor.speedRate = 1.0
 
     ######################################################
 
