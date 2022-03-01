@@ -1,8 +1,8 @@
+- safe drive == captar a distancia no sensor ultrasônico e não permitir avançar a partir de determinado valor
 - fazer streamer da camera
 - implementar zoom digital na camera com R2/L2
 - alinhar servos da camera
 - alinhamento inicial dos servos da camera
-- safe drive == captar a distancia no sensor ultrasônico e não permitir avançar a partir de determinado valor
 - chromecast (?)
 - pegar parâmetros de arquivo de configuração
 - rodar em docker (?)
