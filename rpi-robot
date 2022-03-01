@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/home/pi/code/custom-robot-rpi4/venv/bin/python3
 
 from robot.controller import RobotController
 

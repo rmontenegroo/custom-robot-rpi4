@@ -104,7 +104,7 @@ class RobotController(Controller):
         self._board.rMotor.backward()
         self._board.lMotor.forward()
 
-    def on_R2_release(self, value):
+    def on_R2_release(self):
         self._board.rMotor.halt()
         self._board.lMotor.halt()
 
@@ -114,7 +114,7 @@ class RobotController(Controller):
         self._board.rMotor.forward()
         self._board.lMotor.backward()
 
-    def on_L2_release(self, value):
+    def on_L2_release(self):
         self._board.rMotor.halt()
         self._board.lMotor.halt()
 
