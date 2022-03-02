@@ -3,3 +3,4 @@ pigpio==1.78
 flask==2.0.3
 opencv-python==4.5.5.62
 pychromecast==10.2.3
+rpi.gpio==0.7.1

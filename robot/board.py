@@ -1,6 +1,7 @@
 import time
 import logging
-import pigpio
+
+from RPi import GPIO as gpio
 
 from robot import led
 from robot import buzzer
@@ -24,7 +25,9 @@ class Board(Thread):
         
         Thread.__init__(self, *args, **kwargs)
 
-        self._gpio = pigpio.pi() 
+        self._gpio = gpio
+
+        self._gpio.setmode(gpio.BCM)
         
         self._run = True
     
@@ -137,7 +140,7 @@ class Board(Thread):
                 self._camera.is_alive():
             pass
         
-        self._gpio.stop()
+        self._gpio.cleanup()
 
 
     def set(self):
@@ -180,7 +183,7 @@ class Board(Thread):
         try:
             self._initComponents()
             
-            self._buzzer.beep(2)
+            # self._buzzer.beep(2)
             
             while self._run:
                                         
@@ -195,7 +198,7 @@ class Board(Thread):
             
         finally:
             self._logger.info('Board finally')
-            self._buzzer.beep(3)
+            # self._buzzer.beep(3)
             self._shutdownComponents()
 
 

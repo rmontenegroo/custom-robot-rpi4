@@ -8,9 +8,10 @@ from robot.component import PWMComponent
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
-MINDUTYCYCLE=500
-MAXDUTYCYCLE=2500
+MINDUTYCYCLE=2.5
+MAXDUTYCYCLE=12.5
 FREQUENCY=100
+STEP=0.1
 
 
 class Servo(PWMComponent, Thread):
@@ -19,7 +20,7 @@ class Servo(PWMComponent, Thread):
         Servo component
     """
     
-    def __init__(self, label, gpio, pin, frequency=FREQUENCY, minDC=MINDUTYCYCLE, maxDC=MAXDUTYCYCLE, step=50, initialValue=None, waitTime = 0.05, *args, **kwargs):
+    def __init__(self, label, gpio, pin, frequency=FREQUENCY, minDC=MINDUTYCYCLE, maxDC=MAXDUTYCYCLE, step=STEP, initialValue=None, waitTime = 0.05, *args, **kwargs):
         
         PWMComponent.__init__(self, label, gpio, pin, frequency, initialValue)
         
@@ -85,18 +86,27 @@ class Servo(PWMComponent, Thread):
             self._logger.info(self._label + ' finally')
             self.cleanup()
 
+
     def set(self):
         if self._sign > 0:
             if self._state + self._step <= self._maxDC:
                 self._state += self._step
+            else:
+                self._state = self._maxDC
+
         elif self._sign < 0:
             if self._state - self._step >= self._minDC:
                 self._state -= self._step
+            else:
+                self._state = self._minDC
+                
         PWMComponent.set(self)
+
 
     def rotate_to(self, angle):
         self._logger.info(self._label)
         self.state = self.angle2dc(angle, minDC=self._minDC, maxDC=self._maxDC)
+
 
     def rotate_clockwise(self, step=None):
         self._logger.info(self._label)
@@ -104,14 +114,15 @@ class Servo(PWMComponent, Thread):
             self._step = step
         self._sign = -1
 
+
     def rotate_anticlockwise(self, step=None):
         self._logger.info(self._label)
         if step:
             self._step = step
         self._sign = 1
 
+
     def halt(self):
         self._logger.info(self._label)
         self._sign = 0
-
-        
+        self._pwm.ChangeDutyCycle(0)

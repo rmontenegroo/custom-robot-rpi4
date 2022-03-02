@@ -1,19 +1,20 @@
-import pigpio
 import time
 import logging
 
 from threading import Thread
+
+from RPi import GPIO as gpio
 
 from robot.component import PWMComponent
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
-HIGH = pigpio.HIGH
-LOW = pigpio.LOW
+HIGH = gpio.HIGH
+LOW = gpio.LOW
 FREQUENCY = 2000
-MINSPEED = 100
-MAXSPEED = 200
+MINSPEED = 1
+MAXSPEED = 100
 
 
 class Motor(PWMComponent, Thread):
@@ -25,12 +26,14 @@ class Motor(PWMComponent, Thread):
     def __init__(self, label, gpio, pin, pinIn1, pinIn2, frequency=FREQUENCY, minSpeed=MINSPEED, maxSpeed=MAXSPEED, \
         initialState=(LOW, LOW), waitTime = 0.05, *args, **kwargs):
         
-        PWMComponent.__init__(self, label, gpio, pin, frequency, initialState)
+        PWMComponent.__init__(self, label, gpio, pin, frequency, initialState = None)
         
         Thread.__init__(self, *args, **kwargs)
 
         self._pinIn1 = pinIn1
         self._pinIn2 = pinIn2
+
+        self._initialState = initialState
 
         self._minSpeed = minSpeed
         self._maxSpeed = maxSpeed
@@ -43,13 +46,13 @@ class Motor(PWMComponent, Thread):
 
         self._state = (LOW, LOW)
 
-        self._gpio.set_mode(self._pinIn1, pigpio.OUTPUT)
-        self._gpio.set_mode(self._pinIn2, pigpio.OUTPUT)
-        self._gpio.set_mode(self._pin, pigpio.OUTPUT)
+        self._gpio.setup(self._pinIn1, gpio.OUT)
+        self._gpio.setup(self._pinIn2, gpio.OUT)
+        self._gpio.setup(self._pin, gpio.OUT)
 
-        self._gpio.write(self._pinIn1, self._state[0])
-        self._gpio.write(self._pinIn2, self._state[1])
-        self._gpio.set_PWM_dutycycle(self._pin, self._speed)
+        self._gpio.output(self._pinIn1, self._state[0])
+        self._gpio.output(self._pinIn2, self._state[1])
+        self._pwm.ChangeDutyCycle(self._speed)
         
         self._logger = logging.getLogger(self._label)
         self._logger.setLevel(logging.DEBUG)
@@ -110,9 +113,9 @@ class Motor(PWMComponent, Thread):
 
 
     def set(self):
-        self._gpio.write(self._pinIn1, self._state[0])
-        self._gpio.write(self._pinIn2, self._state[1])
-        self._gpio.set_PWM_dutycycle(self._pin, self._speed*self._speedRate)
+        self._gpio.output(self._pinIn1, self._state[0])
+        self._gpio.output(self._pinIn2, self._state[1])
+        self._pwm.ChangeDutyCycle(self._speed*self._speedRate)
 
 
     def forward(self, speed=None):

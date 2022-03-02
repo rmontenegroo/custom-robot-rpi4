@@ -1,4 +1,5 @@
-import pigpio
+from RPi import GPIO as gpio
+
 import math
 
 
@@ -30,12 +31,10 @@ class OnePinComponent(BaseComponent):
         self._initialState = None
         self._state = initialState
 
-        self._gpio.set_mode(self._pin, self._mode)
+        self._gpio.setup(self._pin, self._mode)
 
-        if self._initialState is not None \
-                and self._mode == pigpio.OUTPUT:
-
-            self._gpio.write(self._pin, self._initialState)
+        if self._initialState is not None and self._mode == gpio.OUT:
+            self._gpio.output(self._pin, self._initialState)
 
 
     @property
@@ -67,8 +66,8 @@ class OnePinComponent(BaseComponent):
 class OnOffComponent(OnePinComponent):
 
 
-    def __init__(self, label, gpio, pin, on=pigpio.HIGH, off=pigpio.LOW, initialState=None):
-        OnePinComponent.__init__(self, label, gpio, pin, mode=pigpio.OUTPUT, initialState=initialState)
+    def __init__(self, label, gpio, pin, on=gpio.HIGH, off=gpio.LOW, initialState=None):
+        OnePinComponent.__init__(self, label, gpio, pin, mode=gpio.OUT, initialState=initialState)
 
         self._on = on
         self._off = off
@@ -87,7 +86,7 @@ class OnOffComponent(OnePinComponent):
     
 
     def set(self):
-        self._gpio.write(self._pin, self._state)
+        self._gpio.output(self._pin, self._state)
 
 
 
@@ -97,22 +96,27 @@ class PWMComponent(BaseComponent):
         BaseComponent.__init__(self, label, gpio)
 
         self._pin = pin
-        self._mode = pigpio.OUTPUT
+        self._mode = gpio.OUT
         self._initialState = initialState
         self._frequency = frequency
 
-        self._gpio.set_mode(self._pin, self._mode)
-        self._gpio.set_PWM_frequency(self._pin, self._frequency)
+        self._gpio.setup(self._pin, self._mode)
+        self._pwm = self._gpio.PWM(self._pin, self._frequency)
 
-        if self._initialState is not None and self._mode == pigpio.OUTPUT:
+        if self._initialState is not None and self._mode == gpio.OUT:
             self._state = initialState
+        else:
+            self._state = 0
+
+        self._pwm.start(self._state)
 
 
     def set(self):
-        self._gpio.set_servo_pulsewidth(self._pin, self._state)
+        self._pwm.ChangeDutyCycle(self._state)
+
 
     def cleanup(self):
-        self._gpio.set_servo_pulsewidth(self._pin, 0)
+        self._pwm.stop()
 
 
     @property

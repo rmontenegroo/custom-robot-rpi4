@@ -62,7 +62,7 @@ class Buzzer(OnOffComponent, Thread):
             self._state = ON if self._beeps % 2 == 0 else OFF
             self._beeps -= 1
         
-        self._gpio.write(self._pin, self._state)
+        self._gpio.output(self._pin, self._state)
 
 
     def off(self):
