@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s
 HIGH = pigpio.HIGH
 LOW = pigpio.LOW
 FREQUENCY = 2000
-MINSPEED = 100
+MINSPEED = 50
 MAXSPEED = 200
 
 

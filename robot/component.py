@@ -140,3 +140,59 @@ class PWMComponent(BaseComponent):
         return self._initialState
 
         
+class NPinComponent(BaseComponent):
+
+    def __init__(self, label, gpio, pins, modes, initialStates=None):
+        BaseComponent.__init__(self, label, gpio)
+
+        self._pins = pins
+        self._modes = modes
+        self._initialStates = None
+        self._states = initialStates
+
+        for i, pin in enumerate(self._pins):
+            self._gpio.set_mode(pin, self._modes[i])
+
+        if self._initialStates is not None \
+                and self._modes:
+
+            for i, iState in enumerate(self._initialStates):
+                if iState == pigpio.OUTPUT:
+                    self._gpio.write(self._pins[i], self._initialStates[i])
+
+
+    @property
+    def states(self):
+        return self._states
+
+
+    @states.setter
+    def states(self, values):
+        self._states = values
+
+
+    @property
+    def pins(self):
+        return tuple(self._pins)
+
+
+    @property
+    def modes(self):
+        return tuple(self._modes)
+
+
+    @property
+    def initialStates(self):
+        return tuple(self._initialStates)
+
+
+    def toggle(self):
+        for i, pin in enumerate(self._pins):
+            self._states[i] = HIGH if self._states[i] == LOW else LOW
+    
+
+    def set(self):
+        for i, pin in enumerate(self._pins):
+            self._gpio.write(pin, self._states[i])
+
+

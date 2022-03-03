@@ -6,28 +6,23 @@ class RobotController(Controller):
 
     def __init__(self, **kwargs):
         Controller.__init__(self, **kwargs)
-        self._board = Board()
-        self._board.start()
+        self._robot = Board()
+        self._robot.start()
+
+
+    def shutdown(self):
+        self._robot.stop()
 
     ################ leds ################################
 
     def on_x_press(self):
-        self._board.ledB.toggle()
-
-    def on_x_release(self):
-        Controller.on_x_release(self)
+        self._robot.toggleLed('B')
 
     def on_circle_press(self):
-        self._board.ledR.toggle()
-
-    def on_circle_release(self):
-        Controller.on_circle_release(self)
+        self._robot.toggleLed('R')
 
     def on_triangle_press(self):
-        self._board.ledG.toggle()
-
-    def on_triangle_release(self):
-        Controller.on_triangle_release(self)
+        self._robot.toggleLed('G')
 
     ######################################################
 
@@ -35,10 +30,10 @@ class RobotController(Controller):
     ################ buzzer ##############################
 
     def on_square_press(self):
-        self._board.buzzer.on()
+        self._robot.turnBuzzerOn()
 
     def on_square_release(self):
-        self._board.buzzer.off()
+        self._robot.turnBuzzerOff()
 
     ######################################################
 
@@ -46,16 +41,16 @@ class RobotController(Controller):
     ##########  let/ultrasonic sensor servo ##############
     
     def on_R1_press(self):
-        self._board.ledServo.rotate_clockwise()
+        self._robot.rotateLedClockwise()
 
     def on_R1_release(self):
-        self._board.ledServo.halt()
+        self._robot.haltLed()
 
     def on_L1_press(self):
-        self._board.ledServo.rotate_anticlockwise()
+        self._robot.rotateLedAntiClockwise()
 
     def on_L1_release(self):
-        self._board.ledServo.halt()
+        self._robot.haltLed()
 
     ######################################################
 
@@ -63,22 +58,28 @@ class RobotController(Controller):
     ################ camera servo ########################
 
     def on_up_arrow_press(self):
-        self._board.camServoV.rotate_clockwise()
+        self._robot.moveCameraUp()
+        # self._robot.camServoV.rotate_clockwise()
 
     def on_down_arrow_press(self):
-        self._board.camServoV.rotate_anticlockwise()
+        self._robot.moveCameraDown()
+        # self._robot.camServoV.rotate_anticlockwise()
 
     def on_up_down_arrow_release(self):
-        self._board.camServoV.halt()
+        self._robot.haltCamera()
+        # self._robot.camServoV.halt()
 
     def on_right_arrow_press(self):
-        self._board.camServoH.rotate_clockwise()
+        self._robot.moveCameraRight()
+        # self._robot.camServoH.rotate_clockwise()
 
     def on_left_arrow_press(self):
-        self._board.camServoH.rotate_anticlockwise()
+        self._robot.moveCameraLeft()
+        # self._robot.camServoH.rotate_anticlockwise()
 
     def on_left_right_arrow_release(self):
-        self._board.camServoH.halt()
+        self._robot.haltCamera()
+        # self._robot.camServoH.halt()
 
     ######################################################
 
@@ -86,56 +87,73 @@ class RobotController(Controller):
     ################## motors ############################
     
     def on_L3_up(self, value):
-        self._board.rMotor.setRelativeSpeed(-32767, 0, value)
-        self._board.lMotor.setRelativeSpeed(-32767, 0, value)
-        self._board.rMotor.forward()
-        self._board.lMotor.forward()
+        self._robot.moveForward(-32767, 0, value, safeDistance=10)
 
     def on_L3_down(self, value):
-        self._board.buzzer.beep(3, waitTime=0.8)
-        self._board.rMotor.setRelativeSpeed(0, 32767, value*0.75)
-        self._board.rMotor.setRelativeSpeed(0, 32767, value*0.75)
-        self._board.rMotor.backward()
-        self._board.lMotor.backward()
+        self._robot.moveBackward(0, 32767, value)
 
     def on_R2_press(self, value):
-        self._board.rMotor.setRelativeSpeed(0, 100, 50)
-        self._board.lMotor.setRelativeSpeed(0, 100, 50)
-        self._board.rMotor.backward()
-        self._board.lMotor.forward()
+        self._robot.spinRight(0, 100, 50)
+        """
+        self._robot.rMotor.setRelativeSpeed(0, 100, 50)
+        self._robot.lMotor.setRelativeSpeed(0, 100, 50)
+        self._robot.rMotor.backward()
+        self._robot.lMotor.forward()
+        """
 
     def on_R2_release(self):
-        self._board.rMotor.halt()
-        self._board.lMotor.halt()
+        self._robot.halt()
+        """
+        self._robot.rMotor.halt()
+        self._robot.lMotor.halt()
+        """
 
     def on_L2_press(self, value):
-        self._board.rMotor.setRelativeSpeed(0, 100, 50)
-        self._board.lMotor.setRelativeSpeed(0, 100, 50)
-        self._board.rMotor.forward()
-        self._board.lMotor.backward()
+        self._robot.spinLeft(0, 100, 50)
+        """
+        self._robot.rMotor.setRelativeSpeed(0, 100, 50)
+        self._robot.lMotor.setRelativeSpeed(0, 100, 50)
+        self._robot.rMotor.forward()
+        self._robot.lMotor.backward()
+        """
 
     def on_L2_release(self):
-        self._board.rMotor.halt()
-        self._board.lMotor.halt()
+        self._robot.halt()
+        """
+        self._robot.rMotor.halt()
+        self._robot.lMotor.halt()
+        """
 
     def on_L3_y_at_rest(self):
-        self._board.buzzer.off()
-        self._board.rMotor.halt()
-        self._board.lMotor.halt()
+        self._robot.halt()
+        """
+        self._robot.buzzer.off()
+        self._robot.rMotor.halt()
+        self._robot.lMotor.halt()
+        """
 
     def on_R3_right(self, value):
+        self._robot.turnRight(0, 32767, value)
+        """
         rate = abs(value/32767)*0.8
-        self._board.rMotor.speedRate = 1.0 - rate
-        self._board.lMotor.speedRate = rate
+        self._robot.rMotor.speedRate = 1.0 - rate
+        self._robot.lMotor.speedRate = rate
+        """
 
     def on_R3_left(self, value):
+        self._robot.turnLeft(0, 32767, value)
+        """
         rate = abs(value/32767)*0.8
-        self._board.rMotor.speedRate = rate
-        self._board.lMotor.speedRate = 1.0 - rate
+        self._robot.rMotor.speedRate = rate
+        self._robot.lMotor.speedRate = 1.0 - rate
+        """
 
     def on_R3_x_at_rest(self):
-        self._board.rMotor.speedRate = 1.0
-        self._board.lMotor.speedRate = 1.0
+        self._robot.center()
+        """
+        self._robot.rMotor.speedRate = 1.0
+        self._robot.lMotor.speedRate = 1.0
+        """
 
     ######################################################
 
@@ -143,7 +161,8 @@ class RobotController(Controller):
     ################## camera ############################
 
     def on_share_press(self):
-        self._board.camera.snapshot()
+        self._robot.camera.snapshot()
 
     ######################################################
+
 

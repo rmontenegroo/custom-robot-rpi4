@@ -96,7 +96,7 @@ class Servo(PWMComponent, Thread):
 
     def rotate_to(self, angle):
         self._logger.info(self._label)
-        self.state = self.angle2dc(angle, minDC=self._minDC, maxDC=self._maxDC)
+        self._state = self.angle2dc(angle, minDC=self._minDC, maxDC=self._maxDC)
 
     def rotate_clockwise(self, step=None):
         self._logger.info(self._label)

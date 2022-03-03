@@ -9,7 +9,7 @@ def main():
     try:
         controller.listen()
     except (KeyboardInterrupt, SystemExit):
-        controller._board.stop()
+        controller.shutdown()
 
 if __name__ == "__main__":
     main()
