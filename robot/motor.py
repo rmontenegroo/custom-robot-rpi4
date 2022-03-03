@@ -13,7 +13,7 @@ HIGH = pigpio.HIGH
 LOW = pigpio.LOW
 FREQUENCY = 2000
 MINSPEED = 50
-MAXSPEED = 200
+MAXSPEED = 150
 
 
 class Motor(PWMComponent, Thread):
@@ -22,8 +22,7 @@ class Motor(PWMComponent, Thread):
         Motor component
     """
 
-    def __init__(self, label, gpio, pin, pinIn1, pinIn2, frequency=FREQUENCY, minSpeed=MINSPEED, maxSpeed=MAXSPEED, \
-        initialState=(LOW, LOW), waitTime = 0.05, *args, **kwargs):
+    def __init__(self, label, gpio, pin, pinIn1, pinIn2, frequency=FREQUENCY, minSpeed=MINSPEED, maxSpeed=MAXSPEED, initialState=(LOW, LOW), waitTime = 0.05, *args, **kwargs):
         
         PWMComponent.__init__(self, label, gpio, pin, frequency, initialState)
         

@@ -20,7 +20,7 @@ class Ultrasound(Thread):
         Ultrasound component
     """
 
-    def __init__(self, label, gpio, pinIn, pinOut, initialState = LOW, readInterval=0.000002, waitTime = 0.05, *args, **kwargs):
+    def __init__(self, label, gpio, pinIn, pinOut, emergencyStopCallable, emergencyStopDistanceThreshold, initialState = LOW, readInterval=0.000002, waitTime = 0.05, *args, **kwargs):
 
         self._gpio = gpio
 
@@ -31,12 +31,14 @@ class Ultrasound(Thread):
         self._initialState = initialState
         self._state = initialState
 
+        self._emergencyStopCallable = emergencyStopCallable
+        self._emergencyStopDistanceThreshold = emergencyStopDistanceThreshold
+
         self._gpio.setup(pinIn, GPIO.IN)
         self._gpio.setup(pinOut, GPIO.OUT)
 
         if self._initialState is not None:
             self._gpio.output(self._pinOut, self._initialState)
-
 
         Thread.__init__(self, *args, **kwargs)
 
@@ -78,7 +80,8 @@ class Ultrasound(Thread):
 
 
     def set(self):
-        self._gpio.output(self._pinOut, self._state)
+        if self.distance() < self._emergencyStopDistanceThreshold:
+            self._emergencyStopCallable()
 
 
     @property
@@ -116,10 +119,11 @@ class Ultrasound(Thread):
 
 
     def distance(self):
+
         self._gpio.output(self._pinOut, LOW)
         time.sleep(self._readInterval)
         self._gpio.output(self._pinOut, HIGH)
-        time.sleep(self._readInterval*7.5)
+        time.sleep(self._readInterval*8)
         self._gpio.output(self._pinOut, LOW)
 
         t3 = time.time()
@@ -135,9 +139,7 @@ class Ultrasound(Thread):
                 return -1
 
         t2 = time.time()
-        time.sleep(self._readInterval*500)
 
-        time.sleep(self._readInterval*500)
         return ((t2 - t1) * 340 / 2) * 100
 
 

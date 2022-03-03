@@ -22,12 +22,14 @@ class Board(Thread):
         Thread controlling Robot actions
     """
         
-    def __init__(self, waitTime = 0.05, *args, **kwargs):
+    def __init__(self, safeForwardDistance = 30, waitTime = 0.05, *args, **kwargs):
         
         Thread.__init__(self, *args, **kwargs)
 
         self._gpio = pigpio.pi()
         GPIO.setmode(GPIO.BCM)
+
+        self._safeForwardDistance = safeForwardDistance
         
         self._run = True
     
@@ -40,15 +42,15 @@ class Board(Thread):
         self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, frequency=50, initialValue=servo.Servo.angle2dc(105))
 
         self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(60))
-        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50,
-        initialValue=servo.Servo.angle2dc(105))
+        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(105))
 
         self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
         self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
 
         self._camera = camera.Camera('camera')
 
-        self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1)
+        self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1, \
+                emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance)
 
         self._waitTime = waitTime
             
@@ -57,7 +59,17 @@ class Board(Thread):
                 
         self._logger.info('Board')
 
-        
+
+    @property
+    def safeForwardDistance(self):
+        return self._safeForwardDistance
+
+
+    @safeForwardDistance.setter        
+    def safeForwardDistance(self, value):
+        self._safeForwardDistance = value
+
+
     @property
     def gpio(self):
         self._logger.info('Board')
@@ -215,18 +227,17 @@ class Board(Thread):
             self._shutdownComponents()
 
     
-    def moveForward(self, minValue, maxValue, readValue, safeDistance=10):
+    def moveForward(self, minValue, maxValue, readValue):
 
-        self._ledServo.rotate_to(105)
-        readDistance = self._ultrasound.distance()
-        if readDistance > safeDistance:
+        if self._ledServo.state != servo.Servo.angle2dc(105):
+            print('aqui')
+            self._ledServo.rotate_to(105)
+
+        if self._ultrasound.distance() > self._safeForwardDistance:
             self._rMotor.setRelativeSpeed(minValue, maxValue, readValue)
             self._lMotor.setRelativeSpeed(minValue, maxValue, readValue)
             self._rMotor.forward()
             self._lMotor.forward()
-
-        else:
-            self._buzzer.beep(2)
 
 
     def moveBackward(self, minValue, maxValue, readValue):
@@ -255,6 +266,14 @@ class Board(Thread):
         self._buzzer.off()
         self._rMotor.halt()
         self._lMotor.halt()
+
+
+    def emergencyHalt(self):
+        if self._rMotor.state == (motor.HIGH, motor.LOW) \
+            and self._lMotor.state == (motor.HIGH, motor.LOW):
+
+            self._rMotor.halt()
+            self._lMotor.halt()
 
     
     def turnRight(self, minValue, maxValue, readValue):
