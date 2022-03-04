@@ -1,0 +1,12 @@
+- ajustar motores para nas curvas manter velocidade
+- blink dos leds
+- blink dos leds ao iniciar
+- fazer streamer da camera
+- stream para chromecast (?)
+- atualizar o readme com modelo, placa de extensão, os, config.txt
+- implementar zoom digital na camera com R2/L2
+- controle por wifi
+- pegar parâmetros de arquivo de configuração
+- rodar em docker (?)
+- transformar em serviço
+- encurtar os fios

@@ -25,7 +25,7 @@ def gen_frames():  # generate frame by frame from camera
             yield (b'--frame\r\n' 
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-        # time.sleep(0.01)
+        time.sleep(0.0000001)
 
 
 @app.route('/video_feed')
