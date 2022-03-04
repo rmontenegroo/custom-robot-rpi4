@@ -8,7 +8,8 @@
 #### Metadata
 
 - /boot/config.txt
-"""
+
+'''
 framebuffer_width=1280
 framebuffer_height=720
 
@@ -41,5 +42,5 @@ arm_boost=1
 [all]
 enable_uart=1
 hdmi_enable_4kp60=1
-"""
+'''
 
