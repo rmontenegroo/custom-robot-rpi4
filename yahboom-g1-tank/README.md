@@ -7,9 +7,9 @@
 
 #### Metadata
 
-- ** /boot/config.txt **:
+- **/boot/config.txt**:
 
-> ```
+```
 framebuffer_width=1280
 framebuffer_height=720
 
