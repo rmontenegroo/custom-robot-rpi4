@@ -209,6 +209,9 @@ class Board(Thread):
             self._initComponents()
             
             self._buzzer.beep(2)
+            self._ledR.blink(2)
+            self._ledG.blink(2)
+            self._ledB.blink(2)
             
             while self._run:
                                         
@@ -224,6 +227,9 @@ class Board(Thread):
         finally:
             self._logger.info('Board finally')
             self._buzzer.beep(3)
+            self._ledR.blink(3)
+            self._ledG.blink(3)
+            self._ledB.blink(3)
             self._shutdownComponents()
 
     
@@ -339,5 +345,48 @@ class Board(Thread):
 
     def moveCameraLeft(self):
         self._camServoH.rotate_anticlockwise()
+
+
+    def areAnyLightsOn(self):
+        return self._ledR.state == led.ON or \
+            self._ledG.state == led.ON or \
+            self._ledB.state == led.ON
+
+    
+    def areAnyLightsOff(self):
+        return self._ledR.state == led.OFF or \
+            self._ledG.state == led.OFF or \
+            self._ledB.state == led.OFF
+
+
+    def areAllLightsOn(self):
+        return self._ledR.state == led.ON and \
+            self._ledG.state == led.ON and \
+            self._ledB.state == led.ON
+
+    
+    def areAllLightsOff(self):
+        return self._ledR.state == led.OFF and \
+            self._ledG.state == led.OFF and \
+            self._ledB.state == led.OFF
+
+
+    def lightsUp(self):
+        self._ledR.on()
+        self._ledG.on()
+        self._ledB.on()
+
+
+    def lightsOff(self):
+        self._ledR.off()
+        self._ledG.off()
+        self._ledB.off()
+
+
+    def toggleLights(self):
+        if self.areAnyLightsOff():
+            self.lightsUp()
+        elif self.areAnyLightsOn():
+            self.lightsOff()
 
 

@@ -24,6 +24,9 @@ class RobotController(Controller):
     def on_triangle_press(self):
         self._robot.toggleLed('G')
 
+    def on_R3_press(self):
+        self._robot.toggleLights()
+
     ######################################################
 
 
