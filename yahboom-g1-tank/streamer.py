@@ -4,13 +4,16 @@ from flask import Flask, render_template, Response
 import cv2
 import time
 
-time.sleep(5)
+# time.sleep(5)
 
 app = Flask(__name__)
 
 def gen_frames():  # generate frame by frame from camera
 
     camera = cv2.VideoCapture('/dev/video0')
+
+    camera.set(cv2.CAP_PROP_FPS, 19)    
+    camera.set(cv2.CAP_PROP_BUFFERSIZE, 2)
 
     while True:
 
@@ -25,7 +28,7 @@ def gen_frames():  # generate frame by frame from camera
             yield (b'--frame\r\n' 
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-        time.sleep(0.0000001)
+        # time.sleep(0.0000001)
 
 
 @app.route('/video_feed')
