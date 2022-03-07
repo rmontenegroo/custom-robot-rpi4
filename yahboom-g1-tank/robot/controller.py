@@ -15,16 +15,16 @@ class RobotController(Controller):
 
     ################ leds ################################
 
-    def on_x_press(self):
+    def on_square_press(self):
         self._robot.toggleLed('B')
 
     def on_circle_press(self):
         self._robot.toggleLed('R')
 
-    def on_triangle_press(self):
+    def on_x_press(self):
         self._robot.toggleLed('G')
 
-    def on_R3_press(self):
+    def on_playstation_button_press(self):
         self._robot.toggleLights()
 
     ######################################################
@@ -32,16 +32,16 @@ class RobotController(Controller):
 
     ################ buzzer ##############################
 
-    def on_square_press(self):
+    def on_triangle_press(self):
         self._robot.turnBuzzerOn()
 
-    def on_square_release(self):
+    def on_triangle_release(self):
         self._robot.turnBuzzerOff()
 
     ######################################################
 
 
-    ##########  let/ultrasonic sensor servo ##############
+    ##########  led/ultrasonic sensor servo ##############
     
     def on_R1_press(self):
         self._robot.rotateLedClockwise()
@@ -118,7 +118,7 @@ class RobotController(Controller):
 
     ################## camera ############################
 
-    def on_share_press(self):
+    def on_options_press(self):
         self._robot.camera.snapshot()
 
     ######################################################

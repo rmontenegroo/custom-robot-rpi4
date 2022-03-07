@@ -2,6 +2,5 @@ pigpio==1.78
 RPi.GPIO==0.7.1
 pyPS4Controller==1.2.5
 opencv-python==4.5.5.62
-# flask==2.0.3
+flask==2.0.3
 # pychromecast==10.2.3
-gi==1.2
