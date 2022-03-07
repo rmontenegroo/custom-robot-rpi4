@@ -8,6 +8,7 @@ from robot import servo
 from robot import motor
 from robot.sensor import ultrasound
 from robot import camera
+from robot import streamer
 
 from threading import Thread
 from RPi import GPIO
@@ -47,10 +48,12 @@ class Board(Thread):
         self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
         self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
 
-        # self._camera = camera.Camera('camera')
+        self._camera = camera.Camera('camera')
 
         self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1, \
                 emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance)
+
+        self._streamer = streamer.Streamer()
 
         self._waitTime = waitTime
             
@@ -146,12 +149,11 @@ class Board(Thread):
         self._rMotor.stop()
         self._lMotor.stop()
 
-        # self._camera.stop()
+        self._camera.stop()
 
         self._ultrasound.stop()
 
-
-        # self._camera.is_alive() or \
+        self._streamer.stop()
         
         while   self._ledR.is_alive() or \
                 self._ledG.is_alive() or \
@@ -162,6 +164,8 @@ class Board(Thread):
                 self._camServoH.is_alive() or \
                 self._rMotor.is_alive() or \
                 self._lMotor.is_alive() or \
+                self._camera.is_alive() or \
+                self._streamer.is_alive() or \
                 self._ultrasound.is_alive():
             pass
         
@@ -199,9 +203,11 @@ class Board(Thread):
         self._rMotor.start()
         self._lMotor.start()
 
-        # self._camera.start()
+        self._camera.start()
 
         self._ultrasound.start()
+
+        self._streamer.start()
 
 
     def run(self):

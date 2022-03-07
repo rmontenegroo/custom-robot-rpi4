@@ -1,10 +1,6 @@
-- fazer streamer da camera
-- stream para chromecast (?)
-- implementar zoom digital na camera com R2/L2
+- implementar proxy da camera para streamer e snapshot poderem acessar o mesmo device
 - atualizar o readme com modelo, placa de extensão, os, config.txt
-- ajustar motores para nas curvas manter velocidade
 - controle por wifi
 - pegar parâmetros de arquivo de configuração
-- rodar em docker (?)
 - transformar em serviço
 - encurtar os fios
