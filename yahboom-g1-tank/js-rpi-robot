@@ -1,0 +1,15 @@
+#!/bin/env python3
+
+from robot.controller import RobotController
+
+def main():
+
+    controller = RobotController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+
+    try:
+        controller.listen()
+    except (KeyboardInterrupt, SystemExit):
+        controller.shutdown()
+
+if __name__ == "__main__":
+    main()
