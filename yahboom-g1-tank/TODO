@@ -1,4 +1,4 @@
-- implementar proxy da camera para streamer e snapshot poderem acessar o mesmo device
+- corrigir problema do snapshot da camera que nao pega o lastFrame
 - atualizar o readme com modelo, placa de extensão, os, config.txt
 - controle por wifi
 - pegar parâmetros de arquivo de configuração
