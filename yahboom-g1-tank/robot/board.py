@@ -1,6 +1,7 @@
 import time
 import logging
 import pigpio
+import yaml
 
 from robot import led
 from robot import buzzer
@@ -15,6 +16,8 @@ from RPi import GPIO
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
 
 class Board(Thread):
 
@@ -22,7 +25,8 @@ class Board(Thread):
         Thread controlling Robot actions
     """
         
-    def __init__(self, safeForwardDistance = 30, waitTime = 0.05, *args, **kwargs):
+    def __init__(self, safeForwardDistance = config['board']['safeForwardDistance'], waitTime =
+    config['board']['waitTime'], *args, **kwargs):
         
         Thread.__init__(self, *args, **kwargs)
 
@@ -33,25 +37,63 @@ class Board(Thread):
         
         self._run = True
     
-        self._ledR = led.Led('R', self._gpio, 22, led.OFF)
-        self._ledG = led.Led('G', self._gpio, 27, led.OFF)
-        self._ledB = led.Led('B', self._gpio, 24, led.OFF)
+        self._ledR = led.Led('R', self._gpio, config['leds']['red']['pin'], led.OFF)
+        self._ledG = led.Led('G', self._gpio, config['leds']['green']['pin'], led.OFF)
+        self._ledB = led.Led('B', self._gpio, config['leds']['blue']['pin'], led.OFF)
         
-        self._buzzer = buzzer.Buzzer('buzzer', self._gpio, 8, buzzer.OFF)
+        self._buzzer = buzzer.Buzzer('buzzer', self._gpio, config['buzzer']['pin'], buzzer.OFF)
         
-        self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, frequency=50, initialValue=servo.Servo.angle2dc(105))
+        self._ledServo = servo.Servo(
+            'ledServo', 
+            self._gpio, 
+            pin=config['leds']['servo']['pin'], 
+            frequency=config['leds']['servo']['frequency'], 
+            initialValue=servo.Servo.angle2dc(config['leds']['servo']['initialValue'])
+        )
 
-        self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(60))
+        self._camServoV =  servo.Servo(
+            'camServoV', 
+            self._gpio, 
+            pin=config['camera']['servoV']['pin'],
+            frequency=config['camera']['servoV']['frequency'],
+            initialValue=servo.Servo.angle2dc(config['camera']['servoV']['initialValue'])
+        )
 
-        self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(105))
+        self._camServoH =  servo.Servo(
+            'camServoH', 
+            self._gpio, 
+            pin=config['camera']['servoH']['pin'],
+            frequency=config['camera']['servoH']['frequency'],
+            initialValue=servo.Servo.angle2dc(config['camera']['servoH']['initialValue'])
+        )
 
-        self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
-        self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
+        self._rMotor = motor.Motor(
+            'rightMotor', 
+            self._gpio, 
+            pin=config['motors']['right']['pin'], 
+            frequency=config['motors']['right']['frequency'], 
+            pinIn1=config['motors']['right']['pinIn1'], 
+            pinIn2=config['motors']['right']['pinIn2']
+        )
 
-        self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1, \
-                emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance)
+        self._lMotor = motor.Motor(
+            'leftMotor', 
+            self._gpio, 
+            pin=config['motors']['left']['pin'], 
+            frequency=config['motors']['left']['frequency'], 
+            pinIn1=config['motors']['left']['pinIn1'], 
+            pinIn2=config['motors']['left']['pinIn2']
+        )
 
-        self._streamer = streamer.Streamer()
+        self._ultrasound = ultrasound.Ultrasound(
+            'ultrasound', 
+            GPIO, 
+            pinIn=config['sensors']['ultrasound']['pinIn'], 
+            pinOut=config['sensors']['ultrasound']['pinOut'], 
+            emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance
+        )
+
+        self._streamer = streamer.Streamer(deviceName='/dev/video0', fps=19, webServerPort=8080, waitTime=0.001)
 
         self._waitTime = waitTime
             
@@ -64,7 +106,6 @@ class Board(Thread):
     @property
     def safeForwardDistance(self):
         return self._safeForwardDistance
-
 
     @safeForwardDistance.setter        
     def safeForwardDistance(self, value):

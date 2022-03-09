@@ -15,24 +15,28 @@ logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s
 class Streamer(Thread):
 
 
-    def __init__(self, deviceName='/dev/video0', waitTime=0.01):
+    def __init__(self, deviceName='/dev/video0', fps=19, webServerPort=5000, waitTime=0.01):
         Thread.__init__(self)
 
         self._label = 'robot.streamer'
 
+        self._deviceName = deviceName
+        self._fps = fps
+
         self._webServer = None
+        self._webServerPort = webServerPort
 
         self._camera = cv2.VideoCapture(deviceName)
-        self._camera.set(cv2.CAP_PROP_FPS, 19)
+        self._camera.set(cv2.CAP_PROP_FPS, fps)
 
         self._takeSnapshot = False
 
-        self._frame_queue = queue.Queue(20)
+        self._frame_queue = queue.Queue(fps+1)
 
         self._frame_reader_thread = Thread(target=self._frame_reader, daemon=True)
         self._frame_reader_thread.start()
 
-        self._flask = Flask('robot.streamer')
+        self._flask = Flask(self._label)
         self._flask.add_url_rule('/', 'index', view_func=self.index)
         self._flask.add_url_rule('/video_feed', 'video_feed', view_func=self.video_feed)
 
@@ -48,9 +52,7 @@ class Streamer(Thread):
 
     def stop(self):
         self._logger.info(self._label)
-
         self._run = False
-
         self._camera.release()
 
 
@@ -99,7 +101,7 @@ class Streamer(Thread):
     def run(self):
         self._logger.info(self._label)
 
-        self._webServer = Thread(daemon=True, target=self._flask.run, kwargs={'host':'0.0.0.0', 'port': 5000, 'debug': False, 'use_reloader': False, 'threaded': True})
+        self._webServer = Thread(daemon=True, target=self._flask.run, kwargs={'host':'0.0.0.0', 'port': self._webServerPort, 'debug': False, 'use_reloader': False, 'threaded': True})
         self._webServer.start()
 
         while self._run:
