@@ -25,8 +25,7 @@ class Board(Thread):
         Thread controlling Robot actions
     """
         
-    def __init__(self, safeForwardDistance = config['board']['safeForwardDistance'], waitTime =
-    config['board']['waitTime'], *args, **kwargs):
+    def __init__(self, safeForwardDistance = config['board']['safeForwardDistance'], waitTime=config['board']['waitTime'], *args, **kwargs):
         
         Thread.__init__(self, *args, **kwargs)
 
@@ -93,7 +92,12 @@ class Board(Thread):
             emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance
         )
 
-        self._streamer = streamer.Streamer(deviceName='/dev/video0', fps=19, webServerPort=8080, waitTime=0.001)
+        self._streamer = streamer.Streamer(
+            deviceName=config['camera']['deviceName'], 
+            fps=config['camera']['fps'], 
+            webServerPort=config['camera']['webServerPort'], 
+            waitTime=config['camera']['waitTime'],
+        )
 
         self._waitTime = waitTime
             
@@ -252,9 +256,9 @@ class Board(Thread):
             self._initComponents()
             
             self._buzzer.beep(2, waitTime=0.1)
-            self._ledR.blink(2)
-            self._ledG.blink(2)
-            self._ledB.blink(2)
+            self._ledR.blink(2, waitTime=0.1)
+            self._ledG.blink(2, waitTime=0.1)
+            self._ledB.blink(2, waitTime=0.1)
             
             while self._run:
                                         
@@ -270,16 +274,15 @@ class Board(Thread):
         finally:
             self._logger.info('Board finally')
             self._buzzer.beep(3, waitTime=0.1)
-            self._ledR.blink(3)
-            self._ledG.blink(3)
-            self._ledB.blink(3)
+            self._ledR.blink(3, waitTime=0.1)
+            self._ledG.blink(3, waitTime=0.1)
+            self._ledB.blink(3, waitTime=0.1)
             self._shutdownComponents()
 
     
     def moveForward(self, minValue, maxValue, readValue):
 
         if self._ledServo.state != servo.Servo.angle2dc(105):
-            print('aqui')
             self._ledServo.rotate_to(105)
 
         if self._ultrasound.distance() > self._safeForwardDistance:

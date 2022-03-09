@@ -45,4 +45,10 @@ hdmi_enable_4kp60=1
 
 ```
 
+- **OS**:
+
+```
+Linux raspberrypi 5.15.25-v8+ #1527 SMP PREEMPT Mon Feb 28 16:42:43 GMT 2022 aarch64 GNU/Linux
+```
+
 
