@@ -119,7 +119,7 @@ class RobotController(Controller):
     ################## camera ############################
 
     def on_options_press(self):
-        self._robot.camera.snapshot()
+        self._robot.streamer.snapshot()
 
     ######################################################
 

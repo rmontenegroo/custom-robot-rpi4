@@ -68,12 +68,13 @@ class Camera(Thread):
             while self._run:
 
                 self._snapshotLock.acquire()
-                ret, self._lastSnapshot = self._captureDevice.read()
+                ret, frame = self._captureDevice.read()
                 self._snapshotLock.release()
+                self._lastSnapshot = frame
 
                 self.set()
 
-                time.sleep(self._waitTime)
+                # time.sleep(self._waitTime)
 
         except Exception as e :
             self._logger.info(self._label + ' exception')
@@ -81,16 +82,24 @@ class Camera(Thread):
 
         finally:
             self._logger.info(self._label + ' finally')
-            # self.set()
             self.clear()
 
+
+    def lastFrame(self):
+        self._logger.info(self._label)
+        frame = None
+        print('xxxxxxxxxxxxxxxx iuiuaiuia')
+        # if self._snapshotLock.acquire(blocking=False):
+        print('uiuiuaiuia')
+        frame = self._lastSnapshot
+        #    self._snapshotLock.release()
+        print('LastFrame', frame)
+        return frame
 
     def snapshot(self, dirname='/tmp', filename='snapshot.jpg', overwrite=True):
         self._logger.info(self._label)
 
-        self._snapshotLock.acquire()
-        frame = self._lastSnapshot
-        self._snapshotLock.release()
+        frame = self.lastFrame()
 
         if frame is not None:
 

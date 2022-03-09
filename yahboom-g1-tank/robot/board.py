@@ -7,7 +7,7 @@ from robot import buzzer
 from robot import servo
 from robot import motor
 from robot.sensor import ultrasound
-from robot import camera
+# from robot import camera
 from robot import streamer
 
 from threading import Thread
@@ -43,12 +43,13 @@ class Board(Thread):
         self._ledServo = servo.Servo('ledServo', self._gpio, pin=23, frequency=50, initialValue=servo.Servo.angle2dc(105))
 
         self._camServoV =  servo.Servo('camServoV', self._gpio, pin=9, frequency=50, initialValue=servo.Servo.angle2dc(60))
+
         self._camServoH =  servo.Servo('camServoH', self._gpio, pin=11, frequency=50, initialValue=servo.Servo.angle2dc(105))
 
         self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
         self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
 
-        self._camera = camera.Camera('camera')
+        # self._camera = camera.Camera('camera')
 
         self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1, \
                 emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance)
@@ -72,6 +73,11 @@ class Board(Thread):
     def safeForwardDistance(self, value):
         self._safeForwardDistance = value
 
+
+    @property
+    def streamer(self):
+        self._logger.info('Board')
+        return self._streamer
 
     @property
     def gpio(self):
@@ -112,10 +118,10 @@ class Board(Thread):
         self._logger.info('Board')
         return self._camServoH
 
-    @property
-    def camera(self):
-        self._logger.info('Board')
-        return self._camera
+    # @property
+    # def camera(self):
+    #    self._logger.info('Board')
+    #    return self._camera
 
     @property
     def rMotor(self):
@@ -149,11 +155,13 @@ class Board(Thread):
         self._rMotor.stop()
         self._lMotor.stop()
 
-        self._camera.stop()
+        # self._camera.stop()
+        # self._camera.is_alive() or \
 
         self._ultrasound.stop()
 
         self._streamer.stop()
+        
         
         while   self._ledR.is_alive() or \
                 self._ledG.is_alive() or \
@@ -164,7 +172,6 @@ class Board(Thread):
                 self._camServoH.is_alive() or \
                 self._rMotor.is_alive() or \
                 self._lMotor.is_alive() or \
-                self._camera.is_alive() or \
                 self._streamer.is_alive() or \
                 self._ultrasound.is_alive():
             pass
@@ -203,7 +210,7 @@ class Board(Thread):
         self._rMotor.start()
         self._lMotor.start()
 
-        self._camera.start()
+        # self._camera.start()
 
         self._ultrasound.start()
 
