@@ -1,15 +1,13 @@
 import cv2
 import time
-import copy
 import os
 import random
 import logging
 import string
-import hashlib
+import queue
 
 from flask import Flask, render_template, Response
-from multiprocessing import Process
-from threading import Thread, Lock
+from threading import Thread
 
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
@@ -27,17 +25,19 @@ class Streamer(Thread):
         self._camera = cv2.VideoCapture(deviceName)
         self._camera.set(cv2.CAP_PROP_FPS, 19)
 
-        while not self._camera.isOpened(): time.sleep(0.1)
+        self._takeSnapshot = False
 
-        self._lastFrame = self._camera.read()[1]
-        self._frameLock = Lock()
+        self._frame_queue = queue.Queue(20)
+
+        self._frame_reader_thread = Thread(target=self._frame_reader, daemon=True)
+        self._frame_reader_thread.start()
 
         self._flask = Flask('robot.streamer')
         self._flask.add_url_rule('/', 'index', view_func=self.index)
         self._flask.add_url_rule('/video_feed', 'video_feed', view_func=self.video_feed)
 
-        self.__snapCount = 0
-        self.__rndPrefix = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        self._snapCount = 0
+        self._rndPrefix = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
         self._logger = logging.getLogger(self._label)
         self._logger.setLevel(logging.DEBUG)
@@ -51,30 +51,10 @@ class Streamer(Thread):
 
         self._run = False
 
-        if self._webServer is not None:
-            self._webServer.kill()
-
         self._camera.release()
 
 
-    @property
-    def lastFrame(self):
-        # self._logger.info(self._label)
-        self._frameLock.acquire()
-        frame = copy.copy(self._lastFrame)
-        self._frameLock.release()
-        return frame
-
-
-    @lastFrame.setter
-    def lastFrame(self, value):
-        # self._logger.info(self._label)
-        self._frameLock.acquire()
-        self._lastFrame = value
-        self._frameLock.release()
-
-
-    def __generate_frame(self):
+    def _frame_reader(self):
 
         while True:
 
@@ -82,16 +62,14 @@ class Streamer(Thread):
 
             if frame is not None:
 
-                self.lastFrame = frame
+                if self._frame_queue.full():
+                    while not self._frame_queue.empty(): self._frame_queue.get()
 
-                m = hashlib.sha256()
-                m.update(frame)
-                print('###', m.hexdigest())
+                if self._takeSnapshot:
+                    self._save_snapshot(frame, self._snapshotDirname, self._snapshotFilename, self._snapshotOverwrite)
+                    self._takeSnapshot = False
 
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame = buffer.tobytes()
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                self._frame_queue.put_nowait(frame)
 
 
     @property
@@ -99,8 +77,19 @@ class Streamer(Thread):
         return self._flask
 
 
+    def _gen_frame(self):
+
+        while True:
+            if not self._frame_queue.empty():
+                frame = self._frame_queue.get_nowait()
+                ret, frame = cv2.imencode('.jpg', frame)
+                frame = frame.tobytes()
+                yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
     def video_feed(self):
-        return Response(self.__generate_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(self._gen_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
     def index(self):
@@ -110,7 +99,7 @@ class Streamer(Thread):
     def run(self):
         self._logger.info(self._label)
 
-        self._webServer = Process(daemon=True, target=self._flask.run, kwargs={'host':'0.0.0.0', 'port': 5000, 'debug': False, 'use_reloader': False, 'threaded': True})
+        self._webServer = Thread(daemon=True, target=self._flask.run, kwargs={'host':'0.0.0.0', 'port': 5000, 'debug': False, 'use_reloader': False, 'threaded': True})
         self._webServer.start()
 
         while self._run:
@@ -119,22 +108,25 @@ class Streamer(Thread):
 
 
     def snapshot(self, dirname='/tmp', filename='snapshot.jpg', overwrite=True):
+        self._snapshotDirname = dirname
+        self._snapshotFilename = filename
+        self._snapshotOverwrite = overwrite
+        self._takeSnapshot = True
+
+
+    def _save_snapshot(self, frame, dirname, filename, overwrite):
         self._logger.info(self._label)
 
-        frame = self.lastFrame
-
         if frame is not None:
-
-            print('#'*100)
 
             filepath = os.path.join(dirname, f'{filename}')
 
             if not overwrite:
-                filepath = os.path.join(dirname, f'{self.__rndPrefix}_{self.__snapCount}_{filename}')
+                filepath = os.path.join(dirname, f'{self._rndPrefix}_{self._snapCount}_{filename}')
 
             cv2.imwrite(filepath, frame)
 
-            self.__snapCount += 1
+            self._snapCount += 1
 
             self._logger.info(f'Snapshot captured to {filepath}.')
 

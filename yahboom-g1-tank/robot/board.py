@@ -7,7 +7,6 @@ from robot import buzzer
 from robot import servo
 from robot import motor
 from robot.sensor import ultrasound
-# from robot import camera
 from robot import streamer
 
 from threading import Thread
@@ -48,8 +47,6 @@ class Board(Thread):
 
         self._rMotor = motor.Motor('rightMotor', self._gpio, pin=13, frequency=2000, pinIn1=19, pinIn2=26)
         self._lMotor = motor.Motor('leftMotor', self._gpio, pin=16, frequency=2000, pinIn1=20, pinIn2=21)
-
-        # self._camera = camera.Camera('camera')
 
         self._ultrasound = ultrasound.Ultrasound('ultrasound', GPIO, pinIn=0, pinOut=1, \
                 emergencyStopCallable=self.emergencyHalt, emergencyStopDistanceThreshold=self.safeForwardDistance)
@@ -118,11 +115,6 @@ class Board(Thread):
         self._logger.info('Board')
         return self._camServoH
 
-    # @property
-    # def camera(self):
-    #    self._logger.info('Board')
-    #    return self._camera
-
     @property
     def rMotor(self):
         self._logger.info('Board')
@@ -154,9 +146,6 @@ class Board(Thread):
 
         self._rMotor.stop()
         self._lMotor.stop()
-
-        # self._camera.stop()
-        # self._camera.is_alive() or \
 
         self._ultrasound.stop()
 
@@ -210,8 +199,6 @@ class Board(Thread):
         self._rMotor.start()
         self._lMotor.start()
 
-        # self._camera.start()
-
         self._ultrasound.start()
 
         self._streamer.start()
@@ -223,7 +210,7 @@ class Board(Thread):
         try:
             self._initComponents()
             
-            self._buzzer.beep(2)
+            self._buzzer.beep(2, waitTime=0.1)
             self._ledR.blink(2)
             self._ledG.blink(2)
             self._ledB.blink(2)
@@ -241,7 +228,7 @@ class Board(Thread):
             
         finally:
             self._logger.info('Board finally')
-            self._buzzer.beep(3)
+            self._buzzer.beep(3, waitTime=0.1)
             self._ledR.blink(3)
             self._ledG.blink(3)
             self._ledB.blink(3)
