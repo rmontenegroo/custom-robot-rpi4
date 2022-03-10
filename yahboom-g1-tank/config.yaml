@@ -1,6 +1,8 @@
 main:
-    controller-mode: ps4
-    device: /dev/input/js0
+    # controller-mode: ps4
+    # device: /dev/input/js0
+    controller-mode: wifi
+    udp-port: 5005
 
 board:
     waitTime: 0.05

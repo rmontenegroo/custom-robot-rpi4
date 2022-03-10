@@ -417,7 +417,7 @@ class Board(Thread):
             self._ledB.state == led.OFF
 
 
-    def lightsUp(self):
+    def lightsOn(self):
         self._ledR.on()
         self._ledG.on()
         self._ledB.on()
@@ -431,7 +431,7 @@ class Board(Thread):
 
     def toggleLights(self):
         if self.areAnyLightsOff():
-            self.lightsUp()
+            self.lightsOn()
         elif self.areAnyLightsOn():
             self.lightsOff()
 

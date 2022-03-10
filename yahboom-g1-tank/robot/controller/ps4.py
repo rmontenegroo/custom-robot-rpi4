@@ -2,10 +2,10 @@ from pyPS4Controller.controller import Controller
 
 from robot.board import Board
     
-class RobotController(Controller):
+class PS4Controller(Controller):
 
-    def __init__(self, **kwargs):
-        Controller.__init__(self, **kwargs)
+    def __init__(self, device, **kwargs):
+        Controller.__init__(self, interface=device, **kwargs)
         self._robot = Board()
         self._robot.start()
 
