@@ -6,7 +6,7 @@ main:
 
 board:
     waitTime: 0.05
-    safeForwardDistance: 30
+    safeForwardDistance: 0
 
 leds:
     red:
