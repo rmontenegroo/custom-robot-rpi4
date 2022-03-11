@@ -1,6 +1,6 @@
 pigpio==1.78
 RPi.GPIO==0.7.1
 pyPS4Controller==1.2.5
-opencv-python==4.5.5.62
+opencv-python==4.5.5.64
 flask==2.0.3
 PyYAML==6.0

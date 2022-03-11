@@ -119,7 +119,7 @@ class PS4Controller(Controller):
     ################## camera ############################
 
     def on_options_press(self):
-        self._robot.streamer.snapshot()
+        self._robot.takeSnapshot()
 
     ######################################################
 

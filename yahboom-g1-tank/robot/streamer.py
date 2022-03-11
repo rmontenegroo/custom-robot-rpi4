@@ -9,19 +9,23 @@ import queue
 from flask import Flask, render_template, Response
 from threading import Thread
 
+
 logging.basicConfig(format='%(asctime)s %(levelname)s (%(process)d) %(filename)s %(funcName)s %(message)s')
 
 
 class Streamer(Thread):
 
 
-    def __init__(self, deviceName='/dev/video0', fps=19, webServerPort=5000, waitTime=0.01):
+    def __init__(self, deviceName='/dev/video0', fps=19, webServerPort=5000, flipH=True, flipV=True, waitTime=0.01):
         Thread.__init__(self)
 
         self._label = 'robot.streamer'
 
         self._deviceName = deviceName
         self._fps = fps
+
+        self._flipV = True
+        self._flipH = True
 
         self._webServer = None
         self._webServerPort = webServerPort
@@ -67,6 +71,12 @@ class Streamer(Thread):
                 if self._frame_queue.full():
                     while not self._frame_queue.empty(): self._frame_queue.get()
 
+                if self._flipV:
+                    frame = cv2.flip(frame, 0)
+
+                if self._flipH:
+                    frame = cv2.flip(frame, 1)
+
                 if self._takeSnapshot:
                     self._save_snapshot(frame, self._snapshotDirname, self._snapshotFilename, self._snapshotOverwrite)
                     self._takeSnapshot = False
@@ -84,6 +94,7 @@ class Streamer(Thread):
         while True:
             if not self._frame_queue.empty():
                 frame = self._frame_queue.get_nowait()
+
                 ret, frame = cv2.imencode('.jpg', frame)
                 frame = frame.tobytes()
                 yield (b'--frame\r\n'

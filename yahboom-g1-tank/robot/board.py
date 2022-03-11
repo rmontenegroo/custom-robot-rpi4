@@ -96,6 +96,8 @@ class Board(Thread):
             deviceName=config['camera']['deviceName'], 
             fps=config['camera']['fps'], 
             webServerPort=config['camera']['webServerPort'], 
+            flipV=config['camera']['flipV'], 
+            flipH=config['camera']['flipH'],
             waitTime=config['camera']['waitTime'],
         )
 
@@ -435,4 +437,7 @@ class Board(Thread):
         elif self.areAnyLightsOn():
             self.lightsOff()
 
+    
+    def takeSnapshot(self):
+        self._streamer.snapshot(overwrite=False)
 

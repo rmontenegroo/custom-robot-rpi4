@@ -1,8 +1,8 @@
 main:
-    # controller-mode: ps4
-    # device: /dev/input/js0
-    controller-mode: wifi
-    udp-port: 5005
+    controller-mode: ps4
+    device: /dev/input/js0
+    # controller-mode: wifi
+    # udp-port: 5005
 
 board:
     waitTime: 0.05
@@ -28,12 +28,12 @@ buzzer:
 
 camera:
     servoV:
-        pin: 9
+        pin: 11
         frequency: 50
         initialValue: 60
 
     servoH:
-        pin: 11
+        pin: 9
         frequency: 50
         initialValue: 105
 
@@ -41,6 +41,8 @@ camera:
     fps: 19
     webServerPort: 8080
     waitTime: 0.001
+    flipH: true
+    flipV: true
 
 sensors:
     ultrasound:

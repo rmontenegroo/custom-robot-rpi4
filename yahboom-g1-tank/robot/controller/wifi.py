@@ -36,7 +36,7 @@ class WiFiController(object):
             'device4off': lambda: self._robot.lightsOff(),
 
             'action 1': lambda: self._robot.turnBuzzerOn(),
-            'action2': lambda: self._robot.streamer.snapshot(),
+            'action2': lambda: self._robot.takeSnapshot(),
 
             'forward': lambda: self._robot.moveForward(0, 100, 100),
             'backward': lambda: self._robot.moveBackward(0, 100, 100),
