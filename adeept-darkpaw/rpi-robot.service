@@ -1,0 +1,11 @@
+[Unit]
+Description=RPi Robot
+After=multi-user.target network.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/code/custom-robot-rpi4/yahboom-g1-tank
+ExecStart=/home/pi/code/custom-robot-rpi4/yahboom-g1-tank/venv/bin/python3 rpi-robot
+
+[Install]
+WantedBy=multi-user.target

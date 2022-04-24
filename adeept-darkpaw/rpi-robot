@@ -1,0 +1,34 @@
+#!/bin/env python3
+
+import yaml
+
+
+with open('config.yaml', 'r') as f:
+    conf = yaml.safe_load(f)
+
+
+def main():
+
+    if conf['main']['controller-mode'] == 'ps4':
+
+        from robot.controller.ps4 import PS4Controller as Controller
+
+        controller = Controller(device=conf['main']['device'], connecting_using_ds4drv=False)
+
+
+
+    elif conf['main']['controller-mode'] == 'wifi':
+
+        from robot.controller.wifi import WiFiController as Controller
+
+        controller = Controller(port=conf['main']['udp-port'])
+
+
+    try:
+        controller.listen()
+    except (KeyboardInterrupt, SystemExit):
+        controller.shutdown()
+
+
+if __name__ == "__main__":
+    main()

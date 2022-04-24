@@ -1,0 +1,65 @@
+main:
+    controller-mode: ps4
+    device: /dev/input/js0
+    # controller-mode: wifi
+    # udp-port: 5005
+
+board:
+    waitTime: 0.05
+    safeForwardDistance: 0
+
+leds:
+    red:
+        pin: 22
+
+    green:
+        pin: 27
+
+    blue:
+        pin: 24
+
+    servo:
+        pin: 23
+        frequency: 50
+        initialValue: 105
+
+buzzer:
+    pin: 8
+
+camera:
+    servoV:
+        pin: 11
+        frequency: 50
+        initialValue: 60
+
+    servoH:
+        pin: 9
+        frequency: 50
+        initialValue: 105
+
+    deviceName: /dev/video0
+    fps: 19
+    webServerPort: 8080
+    waitTime: 0.001
+    flipH: true
+    flipV: true
+
+sensors:
+    ultrasound:
+        pinIn: 0
+        pinOut: 1
+
+motors:
+    left:
+        pin: 16
+        pinIn1: 20
+        pinIn2: 21
+        frequency: 2000
+
+    right:
+        pin: 13
+        pinIn1: 19
+        pinIn2: 26
+        frequency: 2000
+        
+
