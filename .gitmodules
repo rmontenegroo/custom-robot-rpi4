@@ -1,0 +1,3 @@
+[submodule "adeept-darkpaw/adeept_darkpaw"]
+	path = adeept-darkpaw/adeept_darkpaw
+	url = https://github.com/adeept/adeept_darkpaw.git
